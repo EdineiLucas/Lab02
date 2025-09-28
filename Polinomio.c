@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "polinomio.h"
 
 void inicializa_polinomio(Polinomio * ap_pol){
@@ -63,20 +64,63 @@ void zera(Polinomio pol){
     return;
 }
 
-/* Computa a soma dos polinomios a e b colocando o resultado em res. 
- * Libera a memória anteriormente utilizada pelos nos descartados de res, e sobreescreve res. */
-void soma(Polinomio res, Polinomio a, Polinomio b);
+void soma(Polinomio res, Polinomio a, Polinomio b){
 
-/* Computa a subtracao dos polinomios a e b colocando o resultado em res. 
- * Libera a memória anteriormente utilizada pelos nos descartados de res, e sobreescreve res. */
-void subtrai(Polinomio res, Polinomio a, Polinomio b);
+    Polinomio aux_a = a->prox, aux_b = b->prox;
 
+    while(aux_a != a && aux_b != b){
+        if (aux_a->valor.grau == aux_b->valor.grau){
+            if((aux_a->valor.coef) + (aux_b->valor.coef) == 0){
+                aux_a = aux_a->prox;
+                aux_b = aux_b->prox;
+            }
+            else{
+                define_coeficiente(res, aux_a->valor.grau, (aux_a->valor.coef)+(aux_b->valor.coef));
+                aux_a = aux_a->prox;
+                aux_b = aux_b->prox;
+            }
+        }
+        else if((aux_a->valor.grau) < (aux_b->valor.grau)){
+            define_coeficiente(res, aux_a->valor.grau, aux_a->valor.coef);
+            aux_a = aux_a->prox;
+        }
+        else{
+            define_coeficiente(res, aux_b->valor.grau, aux_b->valor.coef);
+            aux_b = aux_b->prox;
+        }
+    }
+    return;
+}
 
-/* Imprime o polinomio pol no formato do exemplo abaixo
- * [(0,2),(3,-2),(10,5)]
- * onde este polinomio tem 3 coeficientes, o de grau 0 com valor 2, o de grau 3 com valor -2 e o de
- * grau 10 com valor 5. 
- */
+void subtrai(Polinomio res, Polinomio a, Polinomio b){
+
+    Polinomio aux_a = a->prox, aux_b = b->prox;
+
+    while (aux_a != a && aux_b != b)
+    {
+        if ((aux_a->valor.grau) == (aux_b->valor.grau)){
+            if ((aux_a->valor.coef) - (aux_b->valor.coef) == 0){
+                aux_a = aux_a->prox;
+                aux_b = aux_b->prox;
+            }
+            else{
+                define_coeficiente(res, aux_a->valor.grau, (aux_a->valor.coef) - (aux_b->valor.coef));
+                aux_a = aux_a->prox;
+                aux_b = aux_b->prox;
+            }
+        }
+        else if ((aux_a->valor.grau) < (aux_b->valor.grau)){
+            define_coeficiente(res, aux_a->valor.grau, aux_a->valor.coef);
+            aux_a = aux_a->prox;
+        }
+        else{
+            define_coeficiente(res, aux_b->valor.grau, (0)-(aux_b->valor.coef));
+            aux_b = aux_b->prox;
+        }
+    }
+    return;
+}
+
 void imprime(Polinomio pol){
 
     Polinomio cabeca = pol;
@@ -100,9 +144,17 @@ void imprime(Polinomio pol){
 
 /* Desaloca toda a memória alocada da lista.
  */
-void desaloca_polinomio(Polinomio *ap_pol);
+void desaloca_polinomio(Polinomio *ap_pol){
 
-int main (){
+    Polinomio * ap_aux = &(*ap_pol)->prox;
 
-    return 0;
+    while (ap_aux != ap_pol)
+    {
+        Polinomio remove;
+        remove = (*ap_aux);
+        ap_aux = &((*ap_aux)->prox);
+        free (remove);
+    }
+    free (ap_aux);
+    return;
 }
